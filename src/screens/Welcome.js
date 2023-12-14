@@ -49,14 +49,17 @@ const Welcome = ({ navigation }) => {
       };
 
       const signOut = async () => {
-        try {
-          await GoogleSignin.revokeAccess();
-          await GoogleSignin.signOut();
-          // Update UI to reflect user logged out
-          console.log('User signed out successfully');
-        } catch (error) {
-          console.error('Error signing out:', error);
-        }
+        // try {
+        //   await GoogleSignin.revokeAccess();
+        //   await GoogleSignin.signOut();
+        //   // Update UI to reflect user logged out
+        //   console.log('User signed out successfully');
+        // } catch (error) {
+        //   console.error('Error signing out:', error);
+        // }
+
+
+        navigation.navigate("Home");
       };
 
     return (
@@ -82,8 +85,8 @@ const Welcome = ({ navigation }) => {
                     </View>
 
                     <View style={styles.button_container}>
-                        <FilledImageButton onPress={(signIn)} />
-                        <Button style={styles.button} title="Skip" onPress={(signOut) } />
+                        <FilledImageButton onPress={signIn} />
+                        <Button style={styles.button} title="Skip" onPress={signOut} />
                     </View>
 
                 </View>

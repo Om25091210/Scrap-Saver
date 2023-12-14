@@ -1,10 +1,8 @@
 import { View, Text, Image, Pressable, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
 import { SafeAreaView } from "react-native-safe-area-context";
-import COLORS from '../constants/colors';
-import { Ionicons } from "@expo/vector-icons";
-import Checkbox from "expo-checkbox";
-import Button from '../components/Button';
+import COLORS from '../../src/constants/colors';
+
 
 import {
     Back,

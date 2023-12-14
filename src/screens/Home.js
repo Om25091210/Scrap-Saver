@@ -90,7 +90,7 @@ const Home = ({ navigation }) => {
                         </View>
                         <View style={styles.imageContainer}>
                             <Image
-                                source={require("../assets/ScrapSaver.png")}
+                                source={require("../assets/scrapSaver.png")}
                                 style={styles.image}
                             />
                         </View>
@@ -129,7 +129,7 @@ const Home = ({ navigation }) => {
                         </View>
                         <View style={styles.imageContainer}>
                             <Image
-                                source={require("../assets/ScrapSaver.png")}
+                                source={require("../assets/scrapSaver.png")}
                                 style={styles.image}
                             />
                         </View>
@@ -167,7 +167,8 @@ const Home = ({ navigation }) => {
 
                 <View style={styles.ViewStyle}>
                     <View style={{ marginBottom: 10 }}>
-                        <FilledButton title="Schedule a Pickup" onPress={() => navigation.navigate("Welcome")} />
+                        <FilledButton title="Schedule a Pickup" 
+                        onPress={() => navigation.navigate("Form")} />
                     </View>
                     <View style={{ marginBottom: 10 }}>
                         <Button
