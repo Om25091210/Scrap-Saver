@@ -85,7 +85,9 @@ const Form = () => {
         </View>
 
         <View style = {styles.inputContainer}>
-          <FilledButton onPress={()=>{}} title = 'Proceed to Scrap'/>
+          <FilledButton
+            onPress={()=>{navigation.navigate("SuccessPage")}} 
+            title = 'Proceed to Scrap'/>
         </View>
 
       </ImageBackground>

@@ -3,6 +3,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import { Profile, Home, Welcome } from "./src/screens";
 import Form from './src/screens/Form';
+import SuccessPage from './src/screens/SuccessPage';
+import PickupsPage from './src/screens/PickupsPage';
 
 const Stack = createNativeStackNavigator();
 
@@ -37,6 +39,14 @@ export default function App() {
             headerShown: false
           }}
         />
+
+        <Stack.Screen
+          name="SuccessPage"
+          component={SuccessPage}
+          options={{
+            headerShown: false
+          }}
+        />
         <Stack.Screen
           name="Home"
           component={Home}
@@ -44,6 +54,15 @@ export default function App() {
             headerShown: false
           }}
         />
+
+        <Stack.Screen
+          name="PickupsPage"
+          component={PickupsPage}
+          options={{
+            headerShown: false
+          }}
+        />
+
       </Stack.Navigator>
 
 

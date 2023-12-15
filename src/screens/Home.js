@@ -174,7 +174,7 @@ const Home = ({ navigation }) => {
                         <Button
                             style={styles.ButtonStyle}
                             title="View Pickups"
-                            onPress={() => navigation.navigate("Welcome")}
+                            onPress={() => navigation.navigate("PickupsPage")}
                         />
                     </View>
                 </View>
