@@ -1,5 +1,5 @@
 import { ImageBackground, StyleSheet,TouchableOpacity,  Text, View, FlatList } from 'react-native'
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import { Back, Bag, Circle } from '../components/icons'
 import COLORS from '../constants/colors'
 import { useNavigation } from '@react-navigation/native'
@@ -9,10 +9,40 @@ import PickupCard from '../components/PickupCard'
 const PickupsPage = () => {
 
     const [selectedTab , setSelectedTab] = useState('Pickups');
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
     const navigation = useNavigation();
 
-    const list = [1,2,3,4,5,6,7,8,9];
+    const fetchData = async (status) => {
+      try {
+          const dataOptions = {
+              method: 'GET',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'authorization':'LqA[3br%H{Am1r2aFmXx_=Z1r1'
+              },
+          };
+          const url = `https://7111-2405-201-3005-afd-d91a-3e26-ba64-a8fe.ngrok-free.app/donations/omyadav04352@gmail.com/${status}`;
+          const response = await fetch(url, dataOptions);
+          if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          const jsonData = await response.json();
+          setData(jsonData.response); // Assuming the 'response' key contains the data array
+          setLoading(false);
+      } catch (error) {
+          setError(error.message);
+          setLoading(false);
+      }
+    };
+    
+    useEffect(() => {
+        fetchData('Pending'); // Fetch 'Pending' donations by default
+    }, []);  
 
+    const reversedData = data.slice().reverse();
 
     const handleBackNavigation = () =>{
         navigation.goBack();
@@ -20,7 +50,12 @@ const PickupsPage = () => {
 
     const render = ({item}) =>{
       return (
-        <PickupCard/>
+        <PickupCard
+            address={item.address}
+            time={item.time}
+            date={item.date}
+            imageurl={item.imageurl}
+        />
       )
     }
 
@@ -43,12 +78,14 @@ const PickupsPage = () => {
                         <TouchableOpacity
                             onPress={()=>{
                                 setSelectedTab('Pickups')
+                                fetchData('Pending');
                             }}>
                             <Text style = {selectedTab ==='Pickups' ? styles.titleText : styles.notSelectedTitleText}>Pickups</Text>
                         </TouchableOpacity>
                         <TouchableOpacity 
                             onPress={()=>{
                                 setSelectedTab('Completed')
+                                fetchData('Completed');
                             }}>
                             <Text style = {selectedTab ==='Completed' ? styles.titleText : styles.notSelectedTitleText}>Completed</Text>
                         </TouchableOpacity>
@@ -57,12 +94,12 @@ const PickupsPage = () => {
                 </View>
 
                 <FlatList 
-                    data = {list}
+                    data={reversedData}
                     renderItem={render}
-
+                    keyExtractor={(item, index) => index.toString()}
+                    contentContainerStyle={{ paddingBottom: 20 }}
                 />
                
-
             </ImageBackground>
 
         </View>
@@ -105,7 +142,7 @@ const styles = StyleSheet.create({
         color : COLORS.use_dark_green,
         opacity : 0.8,
         alignSelf : 'center',
-        width : '80%',
+        width : '100%',
         marginTop : 20,
       },  
       circleContainer: {

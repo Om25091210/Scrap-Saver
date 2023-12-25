@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { View, Text, Pressable, ImageBackground, Image, StyleSheet } from 'react-native';
 import COLORS from '../constants/colors';
 import Button from '../components/Button';
+import Toast from 'react-native-simple-toast';
 import FilledImageButton from '../components/FilledImageButton';
 import SplashScreen from 'react-native-splash-screen';
 import {
@@ -32,6 +33,44 @@ const Welcome = ({ navigation }) => {
           const { email, familyName, givenName, id, name, photo } = userInfo.user;
           console.log(userInfo);
           console.log(email);
+           // Prepare data for the API call
+          const userData = {
+                email,
+                name,
+                uid: id,
+            };
+
+            console.log(JSON.stringify(userData))
+
+            const apiUrl = 'https://7111-2405-201-3005-afd-d91a-3e26-ba64-a8fe.ngrok-free.app/new_user';
+
+            const requestOptions = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'authorization':'LqA[3br%H{Am1r2aFmXx_=Z1r1'
+                },
+                body: JSON.stringify(userData),
+            };
+
+            // Make the API call
+            const response = await fetch(apiUrl, requestOptions);
+            // Extract the status
+            const status = response.status;
+            // Use the status as needed
+            console.log(status);
+            if(status==200){
+                Toast.show('Welcome again '+name);
+            }
+            if (response.ok) {
+                // If the API call is successful (status 200-299), navigate to the "Home" screen
+                navigation.navigate('Home');
+            } else {
+                // Handle the response when the API call fails
+                Toast.show('Sign-In failed.');
+                console.log('API call failed');
+                // Do something else, like displaying an error message or handling the error
+            }
           navigation.navigate("Home");
         } catch (error) {
           if (error.code === statusCodes.SIGN_IN_CANCELLED) {
