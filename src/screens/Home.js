@@ -1,4 +1,4 @@
-import { View, Text, Image, ActivityIndicator, ScrollView, TextInput, FlatList, StyleSheet, TouchableOpacity } from 'react-native'
+import { View, Text, Image, ActivityIndicator, ScrollView, TextInput, FlatList, StyleSheet, TouchableOpacity, ToastAndroid } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SearchBar } from "react-native-elements"; 
@@ -28,40 +28,86 @@ const Home = ({ navigation }) => {
         }
     }, [])
 
-    const fetchPosts = () => {
-        const apiURL = 'https://jsonplaceholder.typicode.com/posts';
-        fetch(apiURL)
-        .then((response) => response.json())
-        .then((responseJson) =>{
-            setfilterdData(responseJson);
-            setmasterData(responseJson);
-            setIsLoading(false); // Update state to hide loading indicator
-        }).catch((error) => {
-            console.error(error);
-            setIsLoading(false); // Handle error and hide loading indicator
-        })
-    }
+    const fetchPosts = async () => {
+        try {
+            const dataOptions = {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'authorization': 'LqA[3br%H{Am1r2aFmXx_=Z1r1'
+                },
+            };
+            const apiURL = 'https://c0e5-2405-201-3005-afd-4cf9-b55d-60c1-5cd7.ngrok-free.app/rates';
+            const response = await fetch(apiURL, dataOptions);
+            const responseData = await response.json();
+            console.log(responseData);
+            setfilterdData(responseData);
+            setmasterData(responseData);
+            setIsLoading(false);
+        } catch (error) {
+            console.error('Error fetching data: ', error);
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchPosts();
+    }, []);
 
     const searchFilter = (text) => {
-        if(text){
-            const newData = masterData.filter((item) =>{
-                const itemData = item.title ? item.title.toUpperCase() : "".toUpperCase();
-                const textData = text.toUpperCase();
-                return itemData.indexOf(textData) > -1;
+        if (text) {
+          const newData = masterData.scrapCategories.map((categoryObj) => {
+            // Filter items within each category based on the text
+            const filteredItems = categoryObj.items.filter((subItem) => {
+              // Access the name property within each subItem
+              const itemName = subItem.name ? subItem.name.toUpperCase() : '';
+              return itemName.includes(text.toUpperCase());
             });
-            setfilterdData(newData);
-            setsearch(text);
-        }else{
-            setfilterdData(masterData);
-            setsearch(text);
+      
+            // Return a new object with the updated filtered items
+            return {
+              ...categoryObj,
+              items: filteredItems,
+            };
+          });
+      
+          // Filter the newData to get only categories with non-empty items
+          const filteredCategories = {
+            scrapCategories: newData
+              .filter((category) => category.items.length > 0)
+              .map((categoryObj) => ({
+                category: categoryObj.category,
+                items: categoryObj.items,
+              })),
+          };
+      
+          // Update the filtered data state and search text
+          setfilterdData(filteredCategories);
+          setsearch(text);
+      
+          console.log("Filtered " + JSON.stringify(filteredCategories));
+        } else {
+          // When no text is entered, show all data
+          setfilterdData(masterData);
+          setsearch(text);
         }
-    }
+      };
+      
+        
 
     const ItemView = ({item}) =>{
         return (
-            <Text style={styles.itemStyle}>
-                {item.id}{'. '}{item.title.toUpperCase()}
-            </Text>
+            <View>
+                <Text style={styles.category}>{item.category}</Text>
+                <View style={styles.horizontalCardContainer}>
+                    {item.items.map((subItem, index) => (
+                    <TouchableOpacity key={index} style={styles.card}>
+                        <Text style={styles.cardText}>{subItem.name}</Text>
+                        <Text style={styles.cardText}>{subItem.rate}</Text>
+                    </TouchableOpacity>
+                    ))}
+                </View>
+            </View>
         )
     }
 
@@ -199,21 +245,10 @@ const Home = ({ navigation }) => {
                             placeholderTextColor={COLORS.black}
                             onChangeText={(text) => searchFilter(text)}
                         />
-                    </View>
-                    {/* {isLoading ? (
-                        <ActivityIndicator size="large" color={COLORS.use_dark_green} />
-                        ) : (
-                            <FlatList
-                                data={filterdData}
-                                scrollEnabled={false}
-                                keyExtractor={(item,index) => index.toString()}
-                                ItemSeparatorComponent={ItemSeparatorView}
-                                renderItem={ItemView}
-                            />
-                    )} */}
+                    </View> 
 
                     <FlatList
-                                data={filterdData}
+                                data={filterdData.scrapCategories}
                                 scrollEnabled={false}
                                 keyExtractor={(item,index) => index.toString()}
                                 ItemSeparatorComponent={ItemSeparatorView}
@@ -403,6 +438,34 @@ const styles= StyleSheet.create({
         marginHorizontal: 20, // Adjust horizontal margin
         marginBottom: 10, // Add margin bottom if necessary
     },
+    category: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginTop: 10,
+        marginBottom: 5,
+        marginLeft: 10,
+        color: 'black',
+      },
+      horizontalCardContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        marginLeft: 10,
+        marginRight: 10,
+      },
+      card: {
+        width: '48%', // Adjust the width as needed
+        backgroundColor: '#f0f0f0',
+        borderRadius: 8,
+        padding: 10,
+        marginBottom: 10,
+        alignItems: 'center',
+      },
+      cardText: {
+        fontSize: 16,
+        color: 'black',
+        marginBottom: 5,
+      },
 });
 
 export default Home

@@ -1,13 +1,47 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import React, {useState, useEffect} from 'react'
 import COLORS from '../constants/colors'
 import { Image } from 'react-native'
 import DeleteIcon from '../components/icons/'
+import Toast from 'react-native-simple-toast';
+import Loading from '../components/Loading'
 
-const PickupCard = ({ address, time, date, imageurl }) => {
+const PickupCard = ({ item, onDelete }) => {
+  
+  const { address, time, date, imageurl, createdAt, email } = item; 
+  const [loading, setLoading] = useState(false);
+  
+  const deleteDonation = async () =>{
+    setLoading(true);
+    const donationRequest = {    
+      email:   email,
+      createdAt: createdAt
+    };
+    const dataOptions = {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'authorization':'LqA[3br%H{Am1r2aFmXx_=Z1r1'
+        },
+        body: JSON.stringify(donationRequest),
+    };
+    const url = `https://c0e5-2405-201-3005-afd-4cf9-b55d-60c1-5cd7.ngrok-free.app/delete-donation`;
+    const response = await fetch(url, dataOptions);
+    if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    else{
+      onDelete(email, createdAt);
+      Toast.show('Deleted Successfully!!');
+      console.log("Deleted Successfully!!")
+    }
+    setLoading(false);
+  }
+
   return (
     <View style={styles.card}>
-      <TouchableOpacity style={styles.delete}>
+      {loading && <Loading/>}
+      <TouchableOpacity style={styles.delete} onPress={deleteDonation}>
         <Image
           source={require('../assets/DeleteIcon.png')}
           style={{ height: 25, width: 25 }}

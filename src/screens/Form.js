@@ -13,11 +13,13 @@ import {
   GoogleSigninButton,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
+import Loading from '../components/Loading';
 
 const Form = () => {
   const navigation = useNavigation();
 
   const [email_, setemail] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // Initialize GoogleSignin
@@ -90,6 +92,7 @@ const Form = () => {
   console.log(uri);
   
   const uploadImage = async () => {
+    setLoading(true);
     const data = new FormData();
     data.append('filename', {
       uri: uri,
@@ -112,7 +115,7 @@ const Form = () => {
   
     
     try {
-      const uploadUrl = 'https://7111-2405-201-3005-afd-d91a-3e26-ba64-a8fe.ngrok-free.app/image-upload'; // Replace with your server endpoint
+      const uploadUrl = 'https://c0e5-2405-201-3005-afd-4cf9-b55d-60c1-5cd7.ngrok-free.app/image-upload'; // Replace with your server endpoint
       const uploadResponse = await fetch(uploadUrl, options);
 
       if (uploadResponse.ok) {
@@ -139,20 +142,24 @@ const Form = () => {
           body: JSON.stringify(donationRequest),
         };
         console.log('Donation Request:', donationOptions);
-        const donationUrl = 'https://7111-2405-201-3005-afd-d91a-3e26-ba64-a8fe.ngrok-free.app/create-donation';
+        const donationUrl = 'https://c0e5-2405-201-3005-afd-4cf9-b55d-60c1-5cd7.ngrok-free.app/create-donation';
         const donationResponse = await fetch(donationUrl, donationOptions);
   
         if (donationResponse.ok) {
           const donationResult = await donationResponse.json();
+          setLoading(false);
           console.log('Donation created successfully:', donationResult);
           navigation.navigate('SuccessPage');
         } else {
+          setLoading(false);          
           throw new Error('Failed to create donation');
         }
       } else {
+        setLoading(false);        
         throw new Error('Image upload failed');
       }
     } catch (error) {
+      setLoading(false);
       console.error('Error uploading image:', error);
     }
   };
@@ -160,7 +167,7 @@ const Form = () => {
   return (
     <SafeAreaView style = {{flex : 1}}>
     <ScrollView style={styles.mainContainer}>
-
+      {loading && <Loading/>}  
       <ImageBackground
         source={require('../assets/formBG.png')}
         resizeMethod='scale'

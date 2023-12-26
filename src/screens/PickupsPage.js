@@ -1,21 +1,25 @@
 import { ImageBackground, StyleSheet,TouchableOpacity,  Text, View, FlatList } from 'react-native'
 import React, {useState, useEffect} from 'react'
 import { Back, Bag, Circle } from '../components/icons'
+import Toast from 'react-native-simple-toast';
 import COLORS from '../constants/colors'
 import { useNavigation } from '@react-navigation/native'
 import PickupCard from '../components/PickupCard'
+import Loading from '../components/Loading'
 
 
 const PickupsPage = () => {
 
     const [selectedTab , setSelectedTab] = useState('Pickups');
     const [data, setData] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
     const navigation = useNavigation();
 
     const fetchData = async (status) => {
+      
+     setLoading(true);
       try {
           const dataOptions = {
               method: 'GET',
@@ -24,7 +28,7 @@ const PickupsPage = () => {
                   'authorization':'LqA[3br%H{Am1r2aFmXx_=Z1r1'
               },
           };
-          const url = `https://7111-2405-201-3005-afd-d91a-3e26-ba64-a8fe.ngrok-free.app/donations/omyadav04352@gmail.com/${status}`;
+          const url = `https://c0e5-2405-201-3005-afd-4cf9-b55d-60c1-5cd7.ngrok-free.app/donations/omyadav04352@gmail.com/${status}`;
           const response = await fetch(url, dataOptions);
           if (!response.ok) {
               throw new Error(`HTTP error! Status: ${response.status}`);
@@ -42,6 +46,12 @@ const PickupsPage = () => {
         fetchData('Pending'); // Fetch 'Pending' donations by default
     }, []);  
 
+    const deleteItem = (email, createdAt) => {
+        // Filter out the item to be deleted based on email and createdAt
+        const updatedData = data.filter(item => item.email !== email || item.createdAt !== createdAt);
+        setData(updatedData); // Update state to trigger re-render
+    };
+
     const reversedData = data.slice().reverse();
 
     const handleBackNavigation = () =>{
@@ -51,17 +61,15 @@ const PickupsPage = () => {
     const render = ({item}) =>{
       return (
         <PickupCard
-            address={item.address}
-            time={item.time}
-            date={item.date}
-            imageurl={item.imageurl}
+            item={item} // Pass the entire item object as props
+            onDelete={deleteItem} 
         />
       )
     }
 
     return (
         <View style={{ flex: 1 }}>
-
+            {loading && <Loading/>}    
             <ImageBackground
                 source={require('../assets/formBG.png')}
                 style={{ flex: 1 }}
@@ -74,7 +82,7 @@ const PickupsPage = () => {
                             <Back style={styles.backStyle} />
                         </View>
                     </TouchableOpacity>
-                    <View style = {{flexDirection : 'row', gap : 5, justifyContent : 'flex-end',flex : 1,}}>
+                    <View style = {{flexDirection : 'row', gap : 20, justifyContent : 'flex-end',flex : 1, marginEnd: 15, marginTop: 3}}>
                         <TouchableOpacity
                             onPress={()=>{
                                 setSelectedTab('Pickups')
@@ -134,7 +142,7 @@ const styles = StyleSheet.create({
         fontSize: 23,
         fontFamily: 'ubuntu',
         fontWeight: '700',
-        opacity : 0.5,
+        opacity : 0.3,
         color: COLORS.use_dark_green,
         marginTop: 4,
       },

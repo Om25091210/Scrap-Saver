@@ -42,7 +42,7 @@ const Welcome = ({ navigation }) => {
 
             console.log(JSON.stringify(userData))
 
-            const apiUrl = 'https://7111-2405-201-3005-afd-d91a-3e26-ba64-a8fe.ngrok-free.app/new_user';
+            const apiUrl = 'https://c0e5-2405-201-3005-afd-4cf9-b55d-60c1-5cd7.ngrok-free.app/new_user';
 
             const requestOptions = {
                 method: 'POST',

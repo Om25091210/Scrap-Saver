@@ -5,14 +5,13 @@ import FilledButton from '../components/FilledButton'
 import LottieView from "lottie-react-native";
 import { useNavigation } from '@react-navigation/native';
 
-
 const SuccessPage = () => {
-
 
   const navigation = useNavigation();
   
   return (
     <View style = {styles.container}>
+     
       <ImageBackground 
           source = {require('../assets/SuccessBG.png')}
           style = {{flex : 1}}
