@@ -5,6 +5,11 @@ import { Profile, Home, Welcome } from "./src/screens";
 import Form from './src/screens/Form';
 import SuccessPage from './src/screens/SuccessPage';
 import PickupsPage from './src/screens/PickupsPage';
+import { Provider } from 'react-redux';
+import { mystore, persistor } from './Store';
+import { Persistor } from 'redux-persist';
+import { PersistGate } from 'redux-persist/integration/react';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -12,6 +17,8 @@ export default function App() {
 
   return (
 
+    <Provider store = {mystore}>
+    <PersistGate persistor={persistor}>
     <NavigationContainer>
 
       <Stack.Navigator
@@ -67,6 +74,7 @@ export default function App() {
 
 
     </NavigationContainer>
-
-  );
+    </PersistGate>
+    </Provider>
+   );
 }

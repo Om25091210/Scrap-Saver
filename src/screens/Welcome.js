@@ -10,10 +10,30 @@ import {
     GoogleSigninButton,
     statusCodes,
   } from '@react-native-google-signin/google-signin';
+import { useDispatch, useSelector } from 'react-redux';
+import { AuthInfo } from '../actions/Auth';
+import { create_user } from '../services/AuthServices';
+
 
 const Welcome = ({ navigation }) => {
+    const dispatch = useDispatch();
+
+    const auth = useSelector(state => state.auth);
+
+    const storeData = (data) =>{
+        //storing in redux
+        dispatch(AuthInfo(data));
+    }
+
+
     useEffect(() => {
         SplashScreen.hide();
+
+        console.log(auth);
+        if(auth?.email)
+        {
+            navigation.navigate("Home");
+        }
     }, []);
 
     useEffect(() => {
@@ -31,8 +51,8 @@ const Welcome = ({ navigation }) => {
     
           // Extracting necessary details
           const { email, familyName, givenName, id, name, photo } = userInfo.user;
-          console.log(userInfo);
-          console.log(email);
+        //   console.log(userInfo);
+        //   console.log(email);
            // Prepare data for the API call
           const userData = {
                 email,
@@ -40,38 +60,20 @@ const Welcome = ({ navigation }) => {
                 uid: id,
             };
 
-            console.log(JSON.stringify(userData))
-
-            const apiUrl = 'https://c0e5-2405-201-3005-afd-4cf9-b55d-60c1-5cd7.ngrok-free.app/new_user';
-
-            const requestOptions = {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'authorization':'LqA[3br%H{Am1r2aFmXx_=Z1r1'
-                },
-                body: JSON.stringify(userData),
-            };
-
-            // Make the API call
-            const response = await fetch(apiUrl, requestOptions);
-            // Extract the status
-            const status = response.status;
-            // Use the status as needed
-            console.log(status);
-            if(status==200){
-                Toast.show('Welcome again '+name);
-            }
-            if (response.ok) {
-                // If the API call is successful (status 200-299), navigate to the "Home" screen
-                navigation.navigate('Home');
-            } else {
-                // Handle the response when the API call fails
-                Toast.show('Sign-In failed.');
-                console.log('API call failed');
-                // Do something else, like displaying an error message or handling the error
-            }
-          navigation.navigate("Home");
+            console.log(userData);
+            await create_user(userData).then(
+                res => {
+                    if(res.error)
+                    {
+                        console.log(res);
+                    }
+                    else{
+                        storeData(userData);
+                        navigation.navigate("Home");
+                    }
+                }
+            )
+            
         } catch (error) {
           if (error.code === statusCodes.SIGN_IN_CANCELLED) {
             console.log('User cancelled the login flow');
@@ -96,10 +98,10 @@ const Welcome = ({ navigation }) => {
         // } catch (error) {
         //   console.error('Error signing out:', error);
         // }
-
-
         navigation.navigate("Home");
       };
+
+    
 
     return (
         <ImageBackground 

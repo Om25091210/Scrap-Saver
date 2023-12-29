@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, ImageBackground, Image, TextInput, ScrollView } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, ImageBackground, Image, TextInput, ScrollView, ToastAndroid } from 'react-native'
 import React, { useState, useEffect } from 'react';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Back, Bag, Circle } from '../components/icons'
@@ -7,56 +7,24 @@ import { useNavigation } from '@react-navigation/native'
 import { Colors } from 'react-native/Libraries/NewAppScreen'
 import FilledButton from '../components/FilledButton';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import {
-  GoogleSignin,
-  GoogleSigninButton,
-  statusCodes,
-} from '@react-native-google-signin/google-signin';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import Loading from '../components/Loading';
+import { useSelector } from 'react-redux';
+import { create_pickups, upload_image } from '../services/PickupService';
 
 const Form = () => {
   const navigation = useNavigation();
 
-  const [email_, setemail] = useState("");
+  const auth = useSelector(state => state.auth);
+
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    // Initialize GoogleSignin
-    GoogleSignin.configure({
-      ClientId:'312761775781-a8d8g7kth2ovmp06p0eo1le52s6m314b.apps.googleusercontent.com',
-      "client_type": 3
-    });
-
-    // Call the method to check if the user is already signed in
-    getCurrentUserInfo();
-  }, []);
-
-  const getCurrentUserInfo = async () => {
-    try {
-      // Check if the user is currently signed in
-      const isSignedIn = await GoogleSignin.isSignedIn();
-
-      if (isSignedIn) {
-        // Get user details
-        const userInfo = await GoogleSignin.signInSilently();
-        console.log('User Info:', userInfo.user);
-        setemail(userInfo.user.email)
-        console.log('User Email:', userInfo.user.email);
-      } else {
-        console.log('No user is currently signed in.');
-      }
-    } catch (error) {
-      console.error('Error retrieving user info:', error);
-    }
-  };
 
   const handleBackNavigation = () => {
     navigation.goBack();
   }
 
   //for image
-  const [pickerResponse, setPickerResponse]= useState(require('../assets/formCard.png')); // Default image
+  const [pickerResponse, setPickerResponse] = useState(require('../assets/formCard.png')); // Default image
 
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
@@ -71,93 +39,61 @@ const Form = () => {
     { label: '04:00 PM - 05:00 PM', value: '04:00 PM - 05:00 PM' },
     { label: '05:00 PM - 06:00 PM', value: '05:00 PM - 06:00 PM' },
     { label: '06:00 PM - 07:00 PM', value: '06:00 PM - 07:00 PM' },
-    ]);
+  ]);
   const [address, setAddress] = useState('');
   const [contactNumber, setContactNumber] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
-  
-  
+
+
   // Function to handle selecting an image for the card
-  const openGallery = () => { 
-    const options = { 
-      selectionLimit: 1, 
-      mediaType: 'photo', 
-      includeBase64: false, 
-    }; 
-    launchImageLibrary(options, setPickerResponse); 
-  }; 
-  
+  const openGallery = () => {
+    const options = {
+      selectionLimit: 1,
+      mediaType: 'photo',
+      includeBase64: false,
+    };
+    launchImageLibrary(options, setPickerResponse);
+  };
+
   const uri = pickerResponse?.assets && pickerResponse.assets[0].uri;
-  console.log(uri);
-  
+  // console.log(uri);
+
   const uploadImage = async () => {
     setLoading(true);
-    const data = new FormData();
-    data.append('filename', {
-      uri: uri,
-      type: 'image/jpeg',
-      name: `donationImage-${Date.now()}.jpg`,
-    });
 
-    const headers = {
-      'Accept': 'application/json',
-      'Content-Type': 'multipart/form-data',
-      'authorization': 'LqA[3br%H{Am1r2aFmXx_=Z1r1',
-      // Add any other required headers
-    };
-  
-    const options = {
-      method: 'POST',
-      headers: headers,
-      body: data,
-    };
-  
-    
     try {
-      const uploadUrl = 'https://c0e5-2405-201-3005-afd-4cf9-b55d-60c1-5cd7.ngrok-free.app/image-upload'; // Replace with your server endpoint
-      const uploadResponse = await fetch(uploadUrl, options);
-
-      if (uploadResponse.ok) {
-        const uploadResult = await uploadResponse.json();
-        console.log('Image uploaded successfully:', uploadResult.fileUrl);
-
-        const donationRequest = {
-          imageurl: uploadResult.fileUrl,
-          email:   email_,
-          address: address,
-          phone: contactNumber,
-          date: selectedDate,
-          time: selectedTime,
-          status: "Pending"
-          // Add other donation details here
-        };
-
-        const donationOptions = {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-              'authorization':'LqA[3br%H{Am1r2aFmXx_=Z1r1'
-          },
-          body: JSON.stringify(donationRequest),
-        };
-        console.log('Donation Request:', donationOptions);
-        const donationUrl = 'https://c0e5-2405-201-3005-afd-4cf9-b55d-60c1-5cd7.ngrok-free.app/create-donation';
-        const donationResponse = await fetch(donationUrl, donationOptions);
-  
-        if (donationResponse.ok) {
-          const donationResult = await donationResponse.json();
+      await upload_image(uri).then(async (res) => {
+        if (res.error) {
+          console.log(res);
           setLoading(false);
-          console.log('Donation created successfully:', donationResult);
-          navigation.navigate('SuccessPage');
-        } else {
-          setLoading(false);          
-          throw new Error('Failed to create donation');
         }
-      } else {
-        setLoading(false);        
-        throw new Error('Image upload failed');
-      }
+        else {
+          const donationRequest = {
+            imageurl: res.fileUrl,
+            email: auth?.email,
+            address: address,
+            phone: contactNumber,
+            date: selectedDate,
+            time: selectedTime,
+            status: "Pending"
+            // Add other donation details here
+          };
+
+          await create_pickups(donationRequest).then(result => {
+            if (result.error) {
+              console.log(result);
+              ToastAndroid.show('Failed to Schedule Pickup', ToastAndroid.SHORT);
+            }
+            else {
+              navigation.navigate('SuccessPage');
+            }
+            setLoading(false);
+
+          });
+        }
+      });
+
     } catch (error) {
       setLoading(false);
       console.error('Error uploading image:', error);
@@ -165,31 +101,31 @@ const Form = () => {
   };
 
   return (
-    <SafeAreaView style = {{flex : 1}}>
-    <ScrollView style={styles.mainContainer}>
-      {loading && <Loading/>}  
-      <ImageBackground
-        source={require('../assets/formBG.png')}
-        resizeMethod='scale'
-        resizeMode='cover'
-        style={styles.container}
-      >
-        <View style={styles.Header}>
-          <TouchableOpacity onPress={handleBackNavigation}>
-            <View style={styles.circleContainer}>
-              <Circle style={styles.circleStyle} />
-              <Back style={styles.backStyle} />
-            </View>
-          </TouchableOpacity>
-          <Text style={styles.titleText}>Schedule a Pickup</Text>
-          <Bag style={{}} />
-        </View>
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView style={styles.mainContainer}>
+        {loading && <Loading />}
+        <ImageBackground
+          source={require('../assets/formBG.png')}
+          resizeMethod='scale'
+          resizeMode='cover'
+          style={styles.container}
+        >
+          <View style={styles.Header}>
+            <TouchableOpacity onPress={handleBackNavigation}>
+              <View style={styles.circleContainer}>
+                <Circle style={styles.circleStyle} />
+                <Back style={styles.backStyle} />
+              </View>
+            </TouchableOpacity>
+            <Text style={styles.titleText}>Schedule a Pickup</Text>
+            <Bag style={{}} />
+          </View>
 
-        <View style={styles.card}>
+          <View style={styles.card}>
             <TouchableOpacity onPress={openGallery}>
               {uri ? (
                 <Image
-                   source={{uri}}
+                  source={{ uri }}
                   style={styles.cardImage}
                 />
               ) : (
@@ -198,66 +134,66 @@ const Form = () => {
                   style={styles.cardImage}
                 />
               )}
-          </TouchableOpacity>
-          <Text style={styles.cardText}>“Trash to treasure, conserve for good measure.”</Text>
-        </View>
+            </TouchableOpacity>
+            <Text style={styles.cardText}>“Trash to treasure, conserve for good measure.”</Text>
+          </View>
 
 
-        <Text style = {styles.text}>Our associate will reach out to you for this donation</Text>
+          <Text style={styles.text}>Our associate will reach out to you for this donation</Text>
 
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputHeading}>Address</Text>
-          <TextInput
-            placeholder='Address'
-            style={styles.input}
-            cursorColor='gray'
-            onChangeText={setAddress}
-          />
-        </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputHeading}>Address</Text>
+            <TextInput
+              placeholder='Address'
+              style={styles.input}
+              cursorColor='gray'
+              onChangeText={setAddress}
+            />
+          </View>
 
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputHeading}>Contact Number</Text>
-          <TextInput
-            placeholder='Contact Number'
-            style={styles.input}
-            keyboardType = 'numeric'
-            cursorColor='gray'
-            onChangeText={setContactNumber}
-          />
-        </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputHeading}>Contact Number</Text>
+            <TextInput
+              placeholder='Contact Number'
+              style={styles.input}
+              keyboardType='numeric'
+              cursorColor='gray'
+              onChangeText={setContactNumber}
+            />
+          </View>
 
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputHeading}>Date</Text>
-          <TextInput
-            placeholder='Select Date'
-            style={styles.input}
-            cursorColor='gray'
-            onChangeText={setSelectedDate}
-          />
-        </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputHeading}>Date</Text>
+            <TextInput
+              placeholder='Select Date'
+              style={styles.input}
+              cursorColor='gray'
+              onChangeText={setSelectedDate}
+            />
+          </View>
 
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputHeading}>Time</Text>
-          <DropDownPicker
-            style={styles.input}
-            open={open}
-            value={value}
-            items={items}
-            setOpen={setOpen}
-            setValue={setValue}
-            setItems={setItems}
-            onChangeValue={(val) => setSelectedTime(val)}
-          />
-        </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputHeading}>Time</Text>
+            <DropDownPicker
+              style={styles.input}
+              open={open}
+              value={value}
+              items={items}
+              setOpen={setOpen}
+              setValue={setValue}
+              setItems={setItems}
+              onChangeValue={(val) => setSelectedTime(val)}
+            />
+          </View>
 
-        <View style = {styles.inputContainer}>
-          <FilledButton
-            onPress={()=>{uploadImage()}} 
-            title = 'Proceed to Scrap'/>
-        </View>
+          <View style={styles.inputContainer}>
+            <FilledButton
+              onPress={() => { uploadImage() }}
+              title='Proceed to Scrap' />
+          </View>
 
-      </ImageBackground>
-    </ScrollView>
+        </ImageBackground>
+      </ScrollView>
     </SafeAreaView>
   )
 }
@@ -287,14 +223,14 @@ const styles = StyleSheet.create({
     marginTop: 4,
     marginStart: 70,
   },
-  text : {
-    color : COLORS.use_dark_green,
-    opacity : 0.8,
-    alignSelf : 'center',
+  text: {
+    color: COLORS.use_dark_green,
+    opacity: 0.8,
+    alignSelf: 'center',
     fontWeight: '300',
     fontFamily: 'ubuntu_bold',
-    marginTop : 20,
-  },  
+    marginTop: 20,
+  },
   circleContainer: {
     position: 'relative',
     justifyContent: 'center',
@@ -358,7 +294,7 @@ const styles = StyleSheet.create({
     elevation: 2,
     height: 44,
     paddingHorizontal: 10,
-    color: COLORS.use_dark_green, 
+    color: COLORS.use_dark_green,
     fontFamily: 'ubuntu_bold',
     fontWeight: "300",
   },

@@ -14,12 +14,18 @@ import {
     DownArrow,
     Search,
   } from "../components/icons";
+import { useSelector } from 'react-redux';
+import { fetch_rates } from '../services/RatesServices';
 
 const Home = ({ navigation }) => {
     const [filterdData, setfilterdData] = useState([]);
     const [masterData, setmasterData] = useState([]);
     const [search, setsearch] = useState('');
-    const [isLoading, setIsLoading] = useState(true); // State to manage loading indicator
+    const [isLoading, setIsLoading] = useState(false); // State to manage loading indicator
+
+
+    const auth = useSelector(state => state.auth);
+    
 
     useEffect(() => {
         fetchPosts();
@@ -29,21 +35,23 @@ const Home = ({ navigation }) => {
     }, [])
 
     const fetchPosts = async () => {
-        try {
-            const dataOptions = {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'authorization': 'LqA[3br%H{Am1r2aFmXx_=Z1r1'
-                },
-            };
-            const apiURL = 'https://c0e5-2405-201-3005-afd-4cf9-b55d-60c1-5cd7.ngrok-free.app/rates';
-            const response = await fetch(apiURL, dataOptions);
-            const responseData = await response.json();
-            console.log(responseData);
-            setfilterdData(responseData);
-            setmasterData(responseData);
-            setIsLoading(false);
+        setIsLoading(true);
+        try {  
+            
+            await fetch_rates().then(res => {
+                if(res.error)
+                {
+                    console.log(res);
+                }
+                else{
+                    setfilterdData(res);
+                    setmasterData(res);
+                    setIsLoading(false);
+                }
+            }).catch(error => {
+                console.log(error)
+            });
+
         } catch (error) {
             console.error('Error fetching data: ', error);
             setIsLoading(false);
@@ -128,7 +136,7 @@ const Home = ({ navigation }) => {
                         <View style={styles.header}>
                             <View style={styles.titleContainer}>
                                 <Bulb style={styles.bulbIcon} />
-                                <Text style={styles.titleText}>Hii Abhishek!!</Text>
+                                <Text style={styles.titleText}>Hii {auth?.name.split(' ')[0]} !!</Text>
                             </View>
                             <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
                               <EnvLogo style={styles.envLogo} />
