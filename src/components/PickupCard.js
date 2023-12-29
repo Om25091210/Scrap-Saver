@@ -5,6 +5,8 @@ import { Image } from 'react-native'
 import DeleteIcon from '../components/icons/'
 import Toast from 'react-native-simple-toast';
 import Loading from '../components/Loading'
+import { create } from 'react-test-renderer'
+import { delete_donation } from '../services/PickupService'
 
 const PickupCard = ({ item, onDelete }) => {
   
@@ -13,29 +15,19 @@ const PickupCard = ({ item, onDelete }) => {
   
   const deleteDonation = async () =>{
     setLoading(true);
-    const donationRequest = {    
-      email:   email,
-      createdAt: createdAt
-    };
-    const dataOptions = {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json',
-            'authorization':'LqA[3br%H{Am1r2aFmXx_=Z1r1'
-        },
-        body: JSON.stringify(donationRequest),
-    };
-    const url = `https://c0e5-2405-201-3005-afd-4cf9-b55d-60c1-5cd7.ngrok-free.app/delete-donation`;
-    const response = await fetch(url, dataOptions);
-    if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-    else{
-      onDelete(email, createdAt);
-      Toast.show('Deleted Successfully!!');
-      console.log("Deleted Successfully!!")
-    }
-    setLoading(false);
+    await delete_donation(email , createdAt).then(
+      res => {
+        if(res.error)
+        {
+          console.log(res);
+          setLoading(false);
+        }
+        else{
+          setLoading(false);
+          onDelete();
+          Toast.show('Deleted Successfully!!');
+        }
+      });
   }
 
   return (

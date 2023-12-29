@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux';
 
 const PickupsPage = () => {
 
-    const [selectedTab, setSelectedTab] = useState('Pickups');
+    const [selectedTab, setSelectedTab] = useState('Pending');
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -37,10 +37,8 @@ const PickupsPage = () => {
         fetchData(selectedTab);
     }, [selectedTab]);
 
-    const deleteItem = (email, createdAt) => {
-        // Filter out the item to be deleted based on email and createdAt
-        const updatedData = data.filter(item => item.email !== email || item.createdAt !== createdAt);
-        setData(updatedData); // Update state to trigger re-render
+    const deleteItem = () => {
+        fetchData(selectedTab);
     };
 
     const reversedData = data.slice().reverse();
@@ -76,15 +74,13 @@ const PickupsPage = () => {
                     <View style={{ flexDirection: 'row', gap: 20, justifyContent: 'flex-end', flex: 1, marginEnd: 15, marginTop: 3 }}>
                         <TouchableOpacity
                             onPress={() => {
-                                setSelectedTab('Pickups')
-                                fetchData('Pending');
+                                setSelectedTab('Pending')
                             }}>
-                            <Text style={selectedTab === 'Pickups' ? styles.titleText : styles.notSelectedTitleText}>Pickups</Text>
+                            <Text style={selectedTab === 'Pending' ? styles.titleText : styles.notSelectedTitleText}>Pickups</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             onPress={() => {
                                 setSelectedTab('Completed')
-                                fetchData('Completed');
                             }}>
                             <Text style={selectedTab === 'Completed' ? styles.titleText : styles.notSelectedTitleText}>Completed</Text>
                         </TouchableOpacity>

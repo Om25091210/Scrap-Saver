@@ -76,20 +76,21 @@ const Form = () => {
             phone: contactNumber,
             date: selectedDate,
             time: selectedTime,
+            donationType : "",
+            wallet : "",
             status: "Pending"
             // Add other donation details here
           };
 
           await create_pickups(donationRequest).then(result => {
-            if (result.error) {
+            if(result.error) {
               console.log(result);
               ToastAndroid.show('Failed to Schedule Pickup', ToastAndroid.SHORT);
             }
-            else {
+            else{
               navigation.navigate('SuccessPage');
             }
             setLoading(false);
-
           });
         }
       });
