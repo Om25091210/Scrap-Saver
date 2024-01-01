@@ -82,6 +82,12 @@ android {
         versionName "1.0"
     }
     signingConfigs {
+         release {
+            storeFile file('ScrapSaverKey.keystore')
+            storePassword 'ScrapSaver'
+            keyAlias 'your_key_alias'
+            keyPassword 'ScrapSaver'
+        }
         debug {
             storeFile file('debug.keystore')
             storePassword 'android'

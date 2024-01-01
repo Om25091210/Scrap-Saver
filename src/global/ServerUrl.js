@@ -1,1 +1,1 @@
-export const SERVER_URL = `https://d988-182-70-237-153.ngrok-free.app/`;
+export const SERVER_URL = `https://scrap-saver-backend.vercel.app/`;

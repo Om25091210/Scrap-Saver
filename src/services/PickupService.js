@@ -14,6 +14,21 @@ export const fetch_pickups = async (email, status) => {
     return jsonData;
 }
 
+export const fetch_pickup = async (email, createdAt) => {
+    const dataOptions = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'authorization': 'LqA[3br%H{Am1r2aFmXx_=Z1r1'
+        },
+    };
+    const url = `${SERVER_URL}donation/${email}/${createdAt}`;
+    const response = await fetch(url, dataOptions);
+    const jsonData = await response.json();
+    return jsonData;
+}
+
+
 export const upload_image = async (uri) => {
     const data = new FormData();
     data.append('filename', {

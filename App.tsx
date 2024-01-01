@@ -9,72 +9,88 @@ import { Provider } from 'react-redux';
 import { mystore, persistor } from './Store';
 import { Persistor } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
+import ViewPickup from './src/screens/ViewPickupAdmin';
+import ViewPickupAdmin from './src/screens/ViewPickupAdmin';
+import ViewPickupUser from './src/screens/ViewPickupUser';
 
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-
   return (
+    <Provider store={mystore}>
+      <PersistGate persistor={persistor}>
+        <NavigationContainer>
 
-    <Provider store = {mystore}>
-    <PersistGate persistor={persistor}>
-    <NavigationContainer>
+          <Stack.Navigator
+            initialRouteName='Home'
+          >
+            <Stack.Screen
+              name="Welcome"
+              component={Welcome}
+              options={{
+                headerShown: false
+              }}
+            />
+            <Stack.Screen
+              name="Profile"
+              component={Profile}
+              options={{
+                headerShown: false
+              }}
+            />
 
-      <Stack.Navigator
-        initialRouteName='Welcome'
-      >
-        <Stack.Screen
-          name="Welcome"
-          component={Welcome}
-          options={{
-            headerShown: false
-          }}
-        />
-        <Stack.Screen
-          name="Profile"
-          component={Profile}
-          options={{
-            headerShown: false
-          }}
-        />
+            <Stack.Screen
+              name="Form"
+              component={Form}
+              options={{
+                headerShown: false
+              }}
+            />
 
-        <Stack.Screen
-          name="Form"
-          component={Form}
-          options={{
-            headerShown: false
-          }}
-        />
+            <Stack.Screen
+              name="SuccessPage"
+              component={SuccessPage}
+              options={{
+                headerShown: false
+              }}
+            />
+            <Stack.Screen
+              name="Home"
+              component={Home}
+              options={{
+                headerShown: false
+              }}
+            />
 
-        <Stack.Screen
-          name="SuccessPage"
-          component={SuccessPage}
-          options={{
-            headerShown: false
-          }}
-        />
-        <Stack.Screen
-          name="Home"
-          component={Home}
-          options={{
-            headerShown: false
-          }}
-        />
+            <Stack.Screen
+              name="PickupsPage"
+              component={PickupsPage}
+              options={{
+                headerShown: false
+              }}
+            />
+            <Stack.Screen
+              name="ViewPickupUser"
+              component={ViewPickupUser}
+              options={{
+                headerShown: false
+              }}
+            />
 
-        <Stack.Screen
-          name="PickupsPage"
-          component={PickupsPage}
-          options={{
-            headerShown: false
-          }}
-        />
+            <Stack.Screen
+              name="ViewPickupAdmin"
+              component={ViewPickupAdmin}
+              options={{
+                headerShown: false
+              }}
+            />
 
-      </Stack.Navigator>
+          </Stack.Navigator>
 
 
-    </NavigationContainer>
-    </PersistGate>
+        </NavigationContainer>
+      </PersistGate>
     </Provider>
-   );
+  );
 }

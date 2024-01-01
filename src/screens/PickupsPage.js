@@ -52,6 +52,12 @@ const PickupsPage = () => {
             <PickupCard
                 item={item} // Pass the entire item object as props
                 onDelete={deleteItem}
+                onView = {()=>{
+                    if(auth?.role==='admin')
+                        navigation.navigate("ViewPickupAdmin" , item);
+                    else
+                        navigation.navigate("ViewPickupUser" , item);
+                }}
             />
         )
     }

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Pressable, ImageBackground, Image, StyleSheet } from 'react-native';
 import COLORS from '../constants/colors';
 import Button from '../components/Button';
@@ -13,12 +13,14 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { AuthInfo } from '../actions/Auth';
 import { create_user } from '../services/AuthServices';
+import Loading from '../components/Loading';
 
 
 const Welcome = ({ navigation }) => {
     const dispatch = useDispatch();
 
     const auth = useSelector(state => state.auth);
+    const [loading , setLoading] = useState(false);
 
     const storeData = (data) =>{
         //storing in redux
@@ -28,12 +30,6 @@ const Welcome = ({ navigation }) => {
 
     useEffect(() => {
         SplashScreen.hide();
-
-        console.log(auth);
-        if(auth?.email)
-        {
-            navigation.navigate("Home");
-        }
     }, []);
 
     useEffect(() => {
@@ -46,6 +42,7 @@ const Welcome = ({ navigation }) => {
 
       const signIn = async () => {
         try {
+
           await GoogleSignin.hasPlayServices();
           const userInfo = await GoogleSignin.signIn();
     
@@ -61,6 +58,8 @@ const Welcome = ({ navigation }) => {
             };
 
             console.log(userData);
+            setLoading(true);
+
             await create_user(userData).then(
                 res => {
                     if(res.error)
@@ -68,8 +67,12 @@ const Welcome = ({ navigation }) => {
                         console.log(res);
                     }
                     else{
-                        storeData(userData);
-                        navigation.navigate("Home");
+                        storeData(res.user);
+                        setLoading(false);
+                        navigation.reset({
+                            index: 0,
+                            routes: [{ name: 'Home' }],
+                        })
                     }
                 }
             )
@@ -98,7 +101,7 @@ const Welcome = ({ navigation }) => {
         // } catch (error) {
         //   console.error('Error signing out:', error);
         // }
-        navigation.navigate("Home");
+        // navigation.navigate("Home");
       };
 
     
@@ -108,6 +111,8 @@ const Welcome = ({ navigation }) => {
             source={require("../assets/img_bg.png")} // Replace with your image source
             style={styles.container}
         >
+
+        {loading && <Loading/>}
             <View style={styles.flexContainer}>
                 <View style={styles.absoluteContainer}>
                     <Image

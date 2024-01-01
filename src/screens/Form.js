@@ -11,6 +11,7 @@ import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import Loading from '../components/Loading';
 import { useSelector } from 'react-redux';
 import { create_pickups, upload_image } from '../services/PickupService';
+import { ResizeImage } from '../Utils/ResizeImage';
 
 const Form = () => {
   const navigation = useNavigation();
@@ -63,7 +64,9 @@ const Form = () => {
     setLoading(true);
 
     try {
-      await upload_image(uri).then(async (res) => {
+      const resizedUri = await ResizeImage(uri);
+      console.log(resizedUri);
+      await upload_image(resizedUri).then(async (res) => {
         if (res.error) {
           console.log(res);
           setLoading(false);
@@ -88,7 +91,10 @@ const Form = () => {
               ToastAndroid.show('Failed to Schedule Pickup', ToastAndroid.SHORT);
             }
             else{
-              navigation.navigate('SuccessPage');
+              navigation.reset({
+                index: 0,
+                routes: [{ name: 'SuccessPage' }],
+            })
             }
             setLoading(false);
           });

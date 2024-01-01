@@ -7,17 +7,21 @@ const Button = (props) => {
     const outlinedColor = COLORS.white;
     const bgColor = props.filled ? filledBgColor : outlinedColor;
     const textColor = props.filled ? COLORS.white : COLORS.primary;
+    const textSize = props.textSize ? props.textSize : 18;
+    const disabled = props.disabled
 
     return (
         <TouchableOpacity
             style={{
                 ...styles.button,
                 ...{ backgroundColor: bgColor },
-                ...props.style
+                ...props.style,
+                opacity : disabled ? 0.6 : 1
             }}
+            disabled = {disabled}
             onPress={props.onPress}
         >
-            <Text style={[styles.text, { color: textColor }]}>{props.title}</Text>
+        <Text style={[styles.text, { color: textColor, fontSize : textSize}]}>{props.title}</Text>
         </TouchableOpacity>
     )
 }

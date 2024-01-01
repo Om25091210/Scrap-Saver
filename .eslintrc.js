@@ -1,5 +1,6 @@
-// module.exports = {
-//   root: true,
-//   extends: '@react-native',
-//   extends: ['plugin:prettier/recommended'],
-// };
+module.exports = {
+  root: true,
+  parser: 'babel-eslint',
+  extends: '@react-native',
+  extends: ['plugin:prettier/recommended'],
+};

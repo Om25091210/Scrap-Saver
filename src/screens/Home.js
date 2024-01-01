@@ -16,6 +16,8 @@ import {
   } from "../components/icons";
 import { useSelector } from 'react-redux';
 import { fetch_rates } from '../services/RatesServices';
+import SplashScreen from 'react-native-splash-screen';
+
 
 const Home = ({ navigation }) => {
     const [filterdData, setfilterdData] = useState([]);
@@ -25,23 +27,30 @@ const Home = ({ navigation }) => {
 
 
     const auth = useSelector(state => state.auth);
-    
+    console.log(auth);
 
     useEffect(() => {
-        fetchPosts();
-        return () => {
-
+        SplashScreen.hide();
+        if(auth === null)
+        {
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'Welcome' }],
+            })
         }
+        else
+            fetchPosts();
     }, [])
 
     const fetchPosts = async () => {
         setIsLoading(true);
         try {  
-            
             await fetch_rates().then(res => {
+                console.log(res);
                 if(res.error)
                 {
                     console.log(res);
+                    setIsLoading(false);
                 }
                 else{
                     setfilterdData(res);
@@ -49,7 +58,8 @@ const Home = ({ navigation }) => {
                     setIsLoading(false);
                 }
             }).catch(error => {
-                console.log(error)
+                setIsLoading(false);
+                console.log(error);
             });
 
         } catch (error) {
@@ -58,9 +68,7 @@ const Home = ({ navigation }) => {
         }
     };
 
-    useEffect(() => {
-        fetchPosts();
-    }, []);
+    
 
     const searchFilter = (text) => {
         if (text) {
@@ -366,7 +374,6 @@ const styles= StyleSheet.create({
         alignItems: 'center',
     },
     mainContainer: {
-        marginTop: 10,
         alignItems: 'center',
     },
     header: {
