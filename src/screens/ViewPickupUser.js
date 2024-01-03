@@ -91,7 +91,7 @@ const ViewPickupUser = ({ route }) => {
       }
     }
     else if (data?.status === 'Verified') {
-      if (data?.amount === -1) {
+      if (data?.amount === "-1") {
         setButton({
           text: 'Amount Not Added',
           disable: true
@@ -112,11 +112,7 @@ const ViewPickupUser = ({ route }) => {
     }
   }, [data]);
 
-  const makeCall = () => {
-    const phoneurl = 'tel:${' + data?.phone + '}'; 
-    Linking.openURL(phoneurl);
-    
-  }
+  
 
   const generateCode = async () => {
     setLoading(true);
@@ -134,11 +130,11 @@ const ViewPickupUser = ({ route }) => {
   }
 
   const onButtonPress = async () => {
-    if (data?.status === 'Responded') {
+    if (data?.status === 'Responded' && data?.code === '-1') {
       await generateCode();
     }
     else if (data?.status === 'Verified') {
-      if (data?.amount !== -1) {
+      if (data?.amount === "-1") {
         setButton({
           text: 'Amount Not Added',
           disable: true
@@ -146,7 +142,7 @@ const ViewPickupUser = ({ route }) => {
       }
     }
     else if (data?.status === 'Transaction Pending') {
-      setOpenPopup({...opacity, confirm : true});
+      setOpenPopup({...openPopUp, confirm : true});
     }
     else if (data?.status === 'Completed') {
       setButton({
@@ -168,7 +164,7 @@ const ViewPickupUser = ({ route }) => {
         </TouchableOpacity>
         <View style={{ flexDirection: 'row', gap: 20, justifyContent: 'flex-end', flex: 1, marginEnd: 15, marginTop: 3 }}>
           <View>
-            <Text style={styles.titleText}>View Pickup User</Text>
+            <Text style={styles.titleText}>View Pickup</Text>
           </View>
         </View>
         <Bag style={{}} />
@@ -252,7 +248,7 @@ const ViewPickupUser = ({ route }) => {
       }
 
       
-      { data?.amount !== -1 &&
+      { data?.amount !== "-1" &&
         
         <View style={styles.detailfield}>
           <View style={styles.detailVal}>
@@ -272,8 +268,9 @@ const ViewPickupUser = ({ route }) => {
           onPress={onButtonPress}
           title={button.text}
           filled />
-      </View>
+      </View> 
 
+      <View>
       {openPopUp.confirm && 
         <ConfirmApprove 
           email = {auth?.email}
@@ -281,10 +278,9 @@ const ViewPickupUser = ({ route }) => {
           handleDismiss={()=>{setOpenPopup({...openPopUp, confirm: false}); getData();}}
         />
       }
+      </View>
 
-      
-
-
+    
     </View>
   );
 };

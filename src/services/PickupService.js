@@ -9,6 +9,7 @@ export const fetch_pickups = async (email, status) => {
         },
     };
     const url = `${SERVER_URL}donations/${email}/${status}`;
+    console.log(url);
     const response = await fetch(url, dataOptions);
     const jsonData = await response.json();
     return jsonData;

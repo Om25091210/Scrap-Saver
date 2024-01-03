@@ -9,60 +9,58 @@ import Button from '../Button'
 import { VerifyTransaction, verifyOTP } from '../../services/SpecialServices'
 
 
-const ConfirmApprove = ({ handleDismiss, email, createdAt}) => {
+const ConfirmApprove = ({ handleDismiss, email, createdAt }) => {
 
   const [loading, setLoading] = useState(false);
-  
+
   const auth = useSelector(state => state.auth);
 
- 
-
-  const onSubmit = async() =>{
+  const onSubmit = async () => {
     setLoading(true);
-       await VerifyTransaction(email , createdAt).then(
-        res=> {
-            if(res.error){
-                ToastAndroid.show(res.error, ToastAndroid.SHORT);
-                console.log(res);
-            }
-            else{
-                ToastAndroid.show(res.message, ToastAndroid.SHORT);
-            }
-        }) 
+    await VerifyTransaction(email, createdAt).then(
+      res => {
+        if (res.error) {
+          ToastAndroid.show(res.error, ToastAndroid.SHORT);
+          console.log(res);
+        }
+        else {
+          ToastAndroid.show(res.message, ToastAndroid.SHORT);
+        }
+      })
     setLoading(false);
     handleDismiss();
   }
 
   return (
     <Modal visible={true}
-        transparent={false}
-        animationType='fade'>
-        {loading && 
-            <Loading/>
-        }
-        {/* <BlurView style={styles.blurViewStyle}></BlurView> */}
-        <TouchableOpacity onPress={handleDismiss} style={{ flex: 1, justifyContent: "center", alignItems: 'center' }}>
+      transparent={true}
+      animationType='fade'>
+      {loading &&
+          <Loading />
+      }
+      {/* <BlurView style={styles.blurViewStyle} blurType='light' blurRadius={5} blurAmount={5}></BlurView> */}
+      <TouchableOpacity onPress={()=>{}} style={{ flex: 1, justifyContent: "center", alignItems: 'center' }}>
 
-        <Pressable style={styles.modalContainer} onPress={handleDismiss}>
-        
-                <View style = {styles.topLine}></View>
-                <Pressable style = {styles.container}>
+        <Pressable style={styles.modalContainer} onPress={()=>{}}>
 
-                        <Text style = {styles.heading}>Approval Confirmation</Text>
-                        
-                        <Text style = {styles.text}>Please confirm in order to approve the Transaction.\nAfter this your order will be completed.</Text>
-                       
-                        <View style = {{alignSelf : 'center', justifyContent : 'center' , flexDirection : 'row', paddingVertical: 10, gap : 20}}>
-                          <Button onPress={handleDismiss} title = "Cancel" style = {{height : 40,paddingTop : 5,paddingBottom : 5,   }} textSize = {14}/>
-                          <Button onPress={onSubmit} title = "Confirm" filled style = {{height : 40,paddingTop : 5,paddingBottom : 5}}  textSize = {14}/>
-                        </View>
-                </Pressable>
-            </Pressable>
+          
+          <Pressable style={styles.container}>
 
-        </TouchableOpacity>
+            <Text style={styles.heading}>Approval Confirmation</Text>
+
+            <Text style={styles.text}>Please confirm in order to approve the Transaction.\nAfter this your order will be completed.</Text>
+
+            <View style={{ alignSelf: 'center', justifyContent: 'center', flexDirection: 'row', paddingVertical: 10, gap: 20 }}>
+              <Button onPress={handleDismiss} title="Cancel" style={{ height: 40, paddingTop: 5, paddingBottom: 5, }} textSize={14} />
+              <Button onPress={onSubmit} title="Confirm" filled style={{ height: 40, paddingTop: 5, paddingBottom: 5 }} textSize={14} />
+            </View>
+          </Pressable>
+        </Pressable>
+
+      </TouchableOpacity>
 
     </Modal>
-)
+  )
 }
 
 export default ConfirmApprove
@@ -82,29 +80,24 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: 'transparent',
     opacity: 1,
-    width: '85%',
+    width: '100%',
+    backgroundColor : 'rgba(0,0,0,0.2)',
   },
   container: {
     backgroundColor: "#fff",
-    width: '100%',
+    width: '85%',
     borderRadius: 5,
     alignItems: 'center',
     gap: 10,
+    elevation : 8,
   },
-  topLine: {
-    height: 8,
-    width: '100%',
-    backgroundColor: "#fff",
-    borderTopLeftRadius: 6,
-    borderTopRightRadius: 6,
-    marginTop: -8,
-  },
-  text : {
-    fontFamily : 'ubuntu',
-    fontSize : 14,
-    fontWeight : '500',
-    color : '#000',
-    opacity : 0.7,
+  
+  text: {
+    fontFamily: 'ubuntu',
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#000',
+    opacity: 0.7,
   },
   iconContainer: {
     backgroundColor: "#fff",
@@ -122,8 +115,8 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     color: 'black',
     opacity: 0.8,
-    fontWeight : '700',
-    fontFamily : 'ubuntu',
+    fontWeight: '700',
+    fontFamily: 'ubuntu',
     alignSelf: 'center',
   },
   input: {
@@ -133,14 +126,14 @@ const styles = StyleSheet.create({
     width: '90%',
     paddingLeft: 10,
     fontSize: 14,
-    fontFamily : 'ubuntu',
+    fontFamily: 'ubuntu',
     color: 'black',
     opacity: 0.7,
-    fontWeight : '700',    
+    fontWeight: '700',
   },
   showPass: {
     fontSize: 13,
-    fontFamily : 'ubuntu',
+    fontFamily: 'ubuntu',
     color: 'black',
     opacity: 0.5,
   },

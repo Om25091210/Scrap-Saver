@@ -13,8 +13,6 @@ import { fetch_pickup } from '../services/PickupService';
 import { setResponded } from '../services/SpecialServices';
 import AddAmount from '../components/PopUps/AddAmount';
 
-
-
 const ViewPickupAdmin = ({ route }) => {
   const [data, setData] = useState(route?.params);
   const auth = useSelector(state => state.auth);
@@ -28,7 +26,7 @@ const ViewPickupAdmin = ({ route }) => {
   });
 
   const [openPopup, setOpenPopup] = useState({
-    verifyPopup: false,
+    verifyPopup: true,
     addAmountPopUp: false,
   })
 
@@ -38,7 +36,7 @@ const ViewPickupAdmin = ({ route }) => {
 
   const getData = async () => {
     setLoading(true);
-    await fetch_pickup(auth?.email, data?.createdAt)
+    await fetch_pickup(data?.email, data?.createdAt)
       .then(res => {
         if (res.error) {
           console.log(res);
@@ -58,9 +56,13 @@ const ViewPickupAdmin = ({ route }) => {
 
   }
 
-  useEffect(() => {
+  useEffect(()=>{
     getData();
+  }, [])
 
+
+
+  useEffect(() => {
     if (data?.status === 'Pending') {
       setButton({
         text: 'Respond',
@@ -82,7 +84,7 @@ const ViewPickupAdmin = ({ route }) => {
       }
     }
     else if (data?.status === 'Verified') {
-      if (data?.amount === -1) {
+      if (data?.amount === "-1") {
         setButton({
           text: 'Add Amount',
           disable: false
@@ -105,7 +107,7 @@ const ViewPickupAdmin = ({ route }) => {
 
   const doRespond = async () => {
     setLoading(true);
-    await setResponded(auth?.email, data?.createdAt).then(
+    await setResponded(data?.email, data?.createdAt).then(
       async (res) => {
         if (res.error) {
           console.log(res);
@@ -125,10 +127,10 @@ const ViewPickupAdmin = ({ route }) => {
       await doRespond();
     }
     else if (data?.status === 'Responded') {
-      setOpenPopup({ ...data, verifyPopup: true });
+      setOpenPopup({ ...openPopup, verifyPopup: true });
     }
     else if (data?.status === 'Verified') {
-      if (data?.amount === -1) {
+      if (data?.amount === "-1") {
         setOpenPopup({ ...openPopup, addAmountPopUp: true });
       }
     }
@@ -158,7 +160,7 @@ const ViewPickupAdmin = ({ route }) => {
         </TouchableOpacity>
         <View style={{ flexDirection: 'row', gap: 20, justifyContent: 'flex-end', flex: 1, marginEnd: 15, marginTop: 3 }}>
           <View>
-            <Text style={styles.titleText}>View Pickup Admin</Text>
+            <Text style={styles.titleText}>View Pickup*</Text>
           </View>
         </View>
         <Bag style={{}} />
@@ -228,7 +230,7 @@ const ViewPickupAdmin = ({ route }) => {
         </View>
       </View>
 
-      { data?.amount !== -1 &&
+      { data?.amount !== "-1" &&
         
         <View style={styles.detailfield}>
           <View style={styles.detailVal}>
@@ -252,19 +254,17 @@ const ViewPickupAdmin = ({ route }) => {
 
       {openPopup.verifyPopup &&
         <VerifyPickup
-          email={auth?.email}
+          email={data?.email}
           createdAt={data?.createdAt}
           handleDismiss={() => { setOpenPopup({ ...openPopup, verifyPopup: false }); getData(); }} />
       }
 
       {openPopup.addAmountPopUp &&
         <AddAmount
-          email={auth?.email}
+          email={data?.email}
           createdAt={data?.createdAt}
           handleDismiss={() => { setOpenPopup({ ...openPopup, addAmountPopUp: false }); getData(); }} />
       }
-
-
     </View>
   );
 };

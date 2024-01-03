@@ -20,10 +20,10 @@ const PickupsPage = () => {
 
     const navigation = useNavigation();
 
-    const fetchData = async (status) => {
+    const fetchData = async () => {
         setLoading(true);
         try {
-            const jsonData = await fetch_pickups(auth?.email, status);
+            const jsonData = await fetch_pickups(auth?.email, selectedTab);
             console.log(jsonData);
             setData(jsonData.response); // Assuming the 'response' key contains the data array
             setLoading(false);
@@ -33,12 +33,13 @@ const PickupsPage = () => {
         }
     };
 
+    console.log(selectedTab);
     useEffect(() => {
-        fetchData(selectedTab);
+        fetchData();
     }, [selectedTab]);
 
     const deleteItem = () => {
-        fetchData(selectedTab);
+        fetchData();
     };
 
     const reversedData = data.slice().reverse();
